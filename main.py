@@ -1,8 +1,7 @@
-import datetime
 import logging
 import argparse
 import settings
-import ee.mapclient
+import indexes.vegetation as vi
 
 from coloredlogs import ColoredFormatter
 from utils import utils
@@ -12,44 +11,48 @@ if sys.version_info[0] < 3:
     raise RuntimeError('Python3 required')
 
 
+def validate_params(sensor, aoi, range_date):
+    """
+    """
+    is_sensor_valid, sensor = utils.Utils().evaluate_sensor(sensor)
+    is_aoi_valid, aoi = utils.Utils().evaluate_aoi(aoi)
+    is_ranges_valid, ranges = utils.Utils().evaluate_range_dates_args(range_date)
+
+    if is_sensor_valid is False:
+        logging.info(">>>> Something wrong with sensor param. Check it and try again!")
+        raise RuntimeError
+
+    if is_aoi_valid is False:
+        logging.info(">>>> Something wrong with AOI param. Check it and try again!")
+        raise RuntimeError
+
+    if is_ranges_valid is False:
+        logging.info(">>>> Something wrong with range dates params. Check it and try again!")
+        raise RuntimeError
+
+    return sensor, aoi, ranges
+
+
 def main(sensor, aoi, range_date):
     """
-    USAGE: python main.py -aoi /data/prodes/aoi/aoi1.shp -range_dates 2018-05-24 2018-07-23 -verbose True
     :param sensor:
     :param aoi:
     :param range_date
     """
-    sensor = utils.Utils().evaluate_sensor(sensor)
-    area_of_interest = utils.Utils().evaluate_aoi(aoi)
-    ranges = utils.Utils().evaluate_range_dates_args(range_date)
-
-    if sensor == 'sentinel-1':
-        logging.info(">>>> No functionalities available for {} sensor.".format(sensor))
-        return
-
+    sensor, aoi, range_date = validate_params(sensor, aoi, range_date)
     sensor_params = settings.COLLECTION[sensor]
-    ee.Initialize()
 
-    collection = (ee.ImageCollection(sensor_params['sr'])
-                  .filterDate(ranges[0], ranges[1]))
-    # area_of_interest = ee.Geometry.Rectangle([-98.75, 19.15, -98.15, 18.75])
-    # mexico_landcover_2010_landsat = ee.Image("users/renekope/MEX_LC_2010_Landsat_v43").clip(area_of_interest)
-    # landsat8_collection = ee.ImageCollection('LANDSAT/LC8_L1T_TOA').filterDate('2016-01-01', '2018-04-19').min()
-    # landsat8_collection = landsat8_collection.slice(0, 9)
-
-    ee.mapclient.centerMap(-93.7848, 30.3252, 11)
-    # ee.mapclient.addToMap(collection.map(NDVI).mean(), sensor_params['vis'])
-    # ee.mapclient.addToMap(collection.map(SAVI).mean(), vis)
+    vi.Vegetation().ndvi(sensor_params, aoi, range_date)
 
 
 if __name__ == '__main__':
     """
     usage:
-        python main.py -sensor landsat-8 -aoi /data/prodes/aoi/shp/aoi_1.shp -range_date 2020-01-01 2020-07-31 -verbose True
+        python main.py -sensor landsat-8 -aoi /data/prodes/aoi/shp/aoi_1.shp 
+                       -range_date 2020-01-01 2020-07-31 -verbose True
     """
     parser = argparse.ArgumentParser(
-        description='Make a stack composition from Sentinel-1 polarization bands, which enhances '
-                    'land-changes under the canopies')
+        description='...')
     parser.add_argument('-sensor', action="store", dest='sensor',
                         help='GEE options to the sensors. Available: landsat-8, landsat-7, sentinel-1, sentinel-2')
     parser.add_argument('-aoi', action="store", dest='aoi',
