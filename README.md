@@ -1,6 +1,6 @@
-<img src="pics/google-ee.png" width="192">
+<img src="pics/google-ee.png">
 
-# Google Earth Engine - client-side processing (gee-python)
+# GEE - client-side processing (gee-python)
 ...
 
 **All modules available here are under construction. Therefore, many errors and malfunctions can occur.**
