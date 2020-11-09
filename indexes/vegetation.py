@@ -1,37 +1,57 @@
 import ee
 import ee.mapclient
-import folium
+import settings
+import datetime
 
 
 class Vegetation:
     """
     Class responsible for vegetation indexes functionalities over earthengine-api
     """
-    def __init__(self):
+    def __init__(self, sensor_params, ranges, map):
         ee.Initialize()
 
-    def ndvi(self, sensor_params, aoi, ranges):
-        """
-        """
-        ee.mapclient.addToMap(aoi)
+        area_of_interest = (ee.FeatureCollection(settings.AOI_URL))
 
-        collections = []
-        median_images = []
+        if map is not None:
+            # TODO: validate map param first
+            set_collection = ee.ImageCollection(sensor_params['derived'][map])
+        else:
+            set_collection = ee.ImageCollection(sensor_params['sr'])
+
+        images = []
         for item in ranges:
-            collection = (ee.ImageCollection(sensor_params['sr']).filterDate(item[0], item[1]).filterBounds(aoi))
-            median_image = collection.median().select('B3', 'B2', 'B1')
+            collection = set_collection.\
+                filterDate(item[0], item[1]).\
+                filterBounds(area_of_interest).\
+                filterMetadata('CLOUDY_PIXEL_PERCENTAGE', 'less_than', 0.5)
+            images.append(collection)
 
-            collections.append(collection)
-            median_images.append(median_image)
+        ee.mapclient.addToMap(images[0].mean().clipToCollection(area_of_interest), sensor_params['vis'])
 
-        ee.mapclient.addToMap(median_images[0], {'gain': [1.4, 1.4, 1.1]})
+    def download_image(self, image):
+        """
+        """
+        path = image.getDownloadUrl({
+            'scale': 30,
+            'crs': 'EPSG:4326',
+            'region': '[[-120, 35], [-119, 35], [-119, 34], [-120, 34]]'
+        })
 
+    def pan_sharp(self):
+        """
+        """
+        image1 = ee.Image('LANDSAT/LE07/C01/T1/LE07_230068_19990815')
 
-        # area_of_interest = ee.Geometry.Rectangle([-98.75, 19.15, -98.15, 18.75])
-        # mexico_landcover_2010_landsat = ee.Image("users/renekope/MEX_LC_2010_Landsat_v43").clip(area_of_interest)
-        # landsat8_collection = ee.ImageCollection('LANDSAT/LC8_L1T_TOA').filterDate('2016-01-01', '2018-04-19').min()
-        # landsat8_collection = landsat8_collection.slice(0, 9)
+        rgb = image1.select('B3', 'B2', 'B1').unitScale(0, 255)
+        gray = image1.select('B8').unitScale(0, 155)
 
-        # ee.mapclient.centerMap(-93.7848, 30.3252, 11)
-        # ee.mapclient.addToMap(collection.map(NDVI).mean(), sensor_params['vis'])
-        # ee.mapclient.addToMap(collection.map(SAVI).mean(), vis)
+        # Convert to HSV, swap in the pan band, and convert back to RGB.
+        huesat = rgb.rgbToHsv().select('hue', 'saturation')
+        upres = ee.Image.cat(huesat, gray).hsvToRgb()
+
+        # Display before and after layers using the same vis parameters.
+        visparams = {'min': [.15, .15, .25], 'max': [1, .9, .9], 'gamma': 1.6}
+        ee.mapclient.addToMap(rgb, visparams, 'Orignal')
+        ee.mapclient.addToMap(upres, visparams, 'Pansharpened')
+

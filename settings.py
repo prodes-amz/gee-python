@@ -2,7 +2,8 @@ from decouple import config
 
 DL_DATASET = config('DL_DATASET')
 
-CLOUD_TOLERANCE = 100
+AOI_URL = "users/rodolfolotte/amazon-biom"
+CLOUD_TOLERANCE = 5
 OBSERVED_DATES = ('01-01', '12-31')
 VALID_ENTRIES_EXTENSION = (".png", ".PNG", ".jpg", ".JPG", ".jpeg", ".JPEG", ".tif", ".tiff", ".TIF", ".TIFF")
 VALID_PREDICTION_EXTENSION = (".png", ".PNG", ".jpg", ".JPG", ".jpeg", ".JPEG", ".tif", ".tiff", ".TIF", ".TIFF")
@@ -43,6 +44,16 @@ COLLECTION = {
             'nbrt': 'LANDSAT/LE07/C01/T1_8DAY_NBRT',
             'ndsi': 'LANDSAT/LC07/C01/T1_8DAY_NDSI',
             'ndwi': 'LANDSAT/LC07/C01/T1_8DAY_NDWI'
+        },
+        'vis': {
+            'min': 0,
+            'max': 1,
+            'palette': [
+                'FFFFFF', 'CE7E45', 'DF923D', 'F1B555', 'FCD163',
+                '99B718', '74A901', '66A000', '529400', '3E8601',
+                '207401', '056201', '004C00', '023B01', '012E01',
+                '011D01', '011301'
+            ]
         }
     },
     'sentinel-1': {
