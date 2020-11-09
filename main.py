@@ -15,19 +15,15 @@ def validate_params(sensor, aoi, range_date):
     """
     """
     is_sensor_valid, sensor = utils.Utils().evaluate_sensor(sensor)
-    is_aoi_valid, aoi = utils.Utils().evaluate_aoi(aoi)
-    is_ranges_valid, ranges = utils.Utils().evaluate_range_dates_args(range_date)
-
     if is_sensor_valid is False:
-        logging.info(">>>> Something wrong with sensor param. Check it and try again!")
         raise RuntimeError
 
+    is_aoi_valid, aoi = utils.Utils().evaluate_aoi(aoi)
     if is_aoi_valid is False:
-        logging.info(">>>> Something wrong with AOI param. Check it and try again!")
         raise RuntimeError
 
+    is_ranges_valid, ranges = utils.Utils().evaluate_range_dates_args(range_date)
     if is_ranges_valid is False:
-        logging.info(">>>> Something wrong with range dates params. Check it and try again!")
         raise RuntimeError
 
     return sensor, aoi, ranges

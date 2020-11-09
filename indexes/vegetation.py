@@ -8,12 +8,11 @@ class Vegetation:
     Class responsible for vegetation indexes functionalities over earthengine-api
     """
     def __init__(self):
-        pass
+        ee.Initialize()
 
     def ndvi(self, sensor_params, aoi, ranges):
         """
         """
-        ee.Initialize()
         ee.mapclient.addToMap(aoi)
 
         collections = []

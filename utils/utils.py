@@ -37,7 +37,7 @@ class Utils:
 
     def evaluate_aoi(self, aoi_path):
         """
-        :param geojson:
+        :param aoi_path:
         :return:
         """
         logging.info(">> Checking aoi {}...".format(aoi_path))
@@ -69,10 +69,10 @@ class Utils:
         flag = True
         ranges = []
 
-        logging.info(">> Checking range dates {}...")
-
         if ranges_args is None:
             return ranges
+
+        logging.info(">> Checking range dates {}...".format(ranges_args))
 
         if (len(ranges_args) % 2) != 0:
             flag = False
