@@ -1,4 +1,6 @@
 import os
+import ee
+import ee.mapclient
 import datetime
 import settings
 import logging
@@ -34,6 +36,68 @@ class Utils:
         """
         """
         pass
+
+    def download_image(self, image):
+        """
+        """
+        path = image.getDownloadUrl({
+            'scale': 30,
+            'crs': 'EPSG:4326',
+            'region': '[[-120, 35], [-119, 35], [-119, 34], [-120, 34]]'
+        })
+
+    def pan_sharp(self):
+        """
+        """
+        image1 = ee.Image('LANDSAT/LE07/C01/T1/LE07_230068_19990815')
+
+        rgb = image1.select('B3', 'B2', 'B1').unitScale(0, 255)
+        gray = image1.select('B8').unitScale(0, 155)
+
+        # Convert to HSV, swap in the pan band, and convert back to RGB.
+        huesat = rgb.rgbToHsv().select('hue', 'saturation')
+        upres = ee.Image.cat(huesat, gray).hsvToRgb()
+
+        # Display before and after layers using the same vis parameters.
+        visparams = {'min': [.15, .15, .25], 'max': [1, .9, .9], 'gamma': 1.6}
+        ee.mapclient.addToMap(rgb, visparams, 'Orignal')
+        ee.mapclient.addToMap(upres, visparams, 'Pansharpened')
+
+    def convert_vector_2_featurecollection(self, vector_path):
+        """
+        :param vector_path:
+        :return:
+        """
+        shapefile = gpd.read_file(vector_path)
+
+        features = []
+        for i in range(shapefile.shape[0]):
+            geom = shapefile.iloc[i:i + 1, :]
+            json_dict = eval(geom.to_json())
+            geojson_dict = json_dict['features'][0]
+            features.append(ee.Feature(geojson_dict))
+
+        fc = ee.FeatureCollection(features)
+
+        # task = ee.batch.Export.table.toAsset(**{
+        #     'collection': features,
+        #     'description': 'exportToTableAssetExample',
+        #     'assetId': settings.ASSET_URL + '/aoi'
+        # })
+        # task.start()
+
+        # task = ee.batch.Export.image.toDrive(
+        #     image=image_out.visualize(vizParams),
+        #     description=FileName,
+        #     folder=folderName,
+        #     scale=30,
+        #     region=Coordinate_List,
+        #     fileFormat='GeoTIFF'
+        # )
+        #
+        # task.start()
+
+        return fc
 
     def evaluate_aoi(self, aoi_path):
         """
