@@ -32,9 +32,8 @@ def main(sensor, range_date):
     :param range_date
     """
     sensor, range_date = validate_params(sensor, range_date)
-    sensor_params = settings.COLLECTION[sensor]
 
-    vi.Vegetation(sensor_params, range_date, None)
+    vi.Vegetation(sensor, range_date, None, False)
 
 
 if __name__ == '__main__':
