@@ -1,12 +1,15 @@
-import folium
+import os
 
-from folium import plugins
 from decouple import config
 
 DL_DATASET = config('DL_DATASET')
+PATH_TO_SAVE_MAPS = os.path.join(DL_DATASET, 'maps')
 
 AOI_URL = "users/rodolfolotte/amazon-biom"
-CLOUD_TOLERANCE = 5
+
+# cloud tolerance: 0: no cloud
+#                100: cloud aplenty
+CLOUD_TOLERANCE = 0.5
 OBSERVED_DATES = ('01-01', '12-31')
 VALID_ENTRIES_EXTENSION = (".png", ".PNG", ".jpg", ".JPG", ".jpeg", ".JPEG", ".tif", ".tiff", ".TIF", ".TIFF")
 VALID_PREDICTION_EXTENSION = (".png", ".PNG", ".jpg", ".JPG", ".jpeg", ".JPEG", ".tif", ".tiff", ".TIF", ".TIFF")
@@ -78,8 +81,8 @@ COLLECTION = {
         'derived': {},
         'vis': {
             'min': 0,
-            'max': 0.5,
-            'gamma': [0.95, 1.1, 1]
+            'max': 2000,
+            'gamma': [0.9, 1.3, 1.1]
         },
         'composite': {
             'natural': ['B4', 'B3', 'B2'],
@@ -88,42 +91,4 @@ COLLECTION = {
             'agriculture': ['B11', 'B8', 'B3']
         }
     }
-}
-
-BASEMAPS = {
-    'Google Maps': folium.TileLayer(
-        tiles='https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
-        attr='Google',
-        name='Google Maps',
-        overlay=True,
-        control=True
-    ),
-    'Google Satellite': folium.TileLayer(
-        tiles='https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
-        attr='Google',
-        name='Google Satellite',
-        overlay=True,
-        control=True
-    ),
-    'Google Terrain': folium.TileLayer(
-        tiles='https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
-        attr='Google',
-        name='Google Terrain',
-        overlay=True,
-        control=True
-    ),
-    'Google Satellite Hybrid': folium.TileLayer(
-        tiles='https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
-        attr='Google',
-        name='Google Satellite',
-        overlay=True,
-        control=True
-    ),
-    'Esri Satellite': folium.TileLayer(
-        tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        attr='Esri',
-        name='Esri Satellite',
-        overlay=True,
-        control=True
-    )
 }

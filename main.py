@@ -2,6 +2,7 @@ import logging
 import argparse
 import settings
 import indexes.vegetation as vi
+import operation.period as pd
 
 from coloredlogs import ColoredFormatter
 from utils import utils
@@ -33,7 +34,8 @@ def main(sensor, range_date):
     """
     sensor, range_date = validate_params(sensor, range_date)
 
-    vi.Vegetation(sensor, range_date, None, False)
+    # Mosaic for one sensor, multiple range of dates, cloud coverage according to settings.CLOUD_TOLERANCE
+    pd.Period().mosaick_by_sensor_and_ranges(sensor, range_date, None, False, 'natural', True)
 
 
 if __name__ == '__main__':
