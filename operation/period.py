@@ -2,6 +2,7 @@ import os
 import ee
 import settings
 import folium
+import logging
 import webbrowser
 
 from utils import utils
@@ -16,7 +17,7 @@ class Period:
         """
         pass
 
-    def mosaick_by_sensor_and_ranges(self, sensor, ranges, map_type, clip_area, composition, is_visualize):
+    def mosaick_by_sensor_and_ranges(self, sensor, ranges, clip_area, composition, is_visualize, reflectance):
         """
         """
         ee.Initialize()
@@ -24,16 +25,21 @@ class Period:
         sensor_params = settings.COLLECTION[sensor]
         area_of_interest = (ee.FeatureCollection(settings.AOI_URL))
 
-        images = utils.Utils().get_collection_by_range(sensor_params, ranges, area_of_interest, map_type)
+        images = utils.Utils().get_collection_by_range(sensor_params, ranges, area_of_interest, reflectance)
+
+        if len(images) == 0:
+            logging.info(">>>>>> No images found! Try different params: {}, {}, or {}".format(sensor, ranges,
+                                                                                              settings.CLOUD_TOLERANCE))
+            raise RuntimeError
 
         for range, item in images:
             if clip_area is True:
-                image = item.clipToCollection(area_of_interest).select(sensor_params['composite']['natural'])
+                image = item.clipToCollection(area_of_interest).select(sensor_params['composite'][composition])
             else:
-                image = item.select(sensor_params['composite']['natural'])
+                image = item.select(sensor_params['composite'][composition])
 
-            mapname = sensor + "-" + range[0].strftime("%Y%m%d") + \
-                      "-to-" + range[1].strftime("%Y%m%d") + "-" + composition + "-" + str(settings.CLOUD_TOLERANCE)
+            mapname = sensor + "-" + range[0].strftime("%Y%m%d") + "-to-" + range[1].strftime("%Y%m%d") + \
+                      "-" + composition + "-" + str(settings.CLOUD_TOLERANCE)
             absolute_map_html_path = os.path.join(settings.PATH_TO_SAVE_MAPS, mapname + ".html")
 
             mapid = image.getMapId(sensor_params['vis'])

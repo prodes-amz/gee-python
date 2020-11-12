@@ -9,7 +9,7 @@ AOI_URL = "users/rodolfolotte/amazon-biom"
 
 # cloud tolerance: 0: no cloud
 #                100: cloud aplenty
-CLOUD_TOLERANCE = 0.5
+CLOUD_TOLERANCE = 1
 OBSERVED_DATES = ('01-01', '12-31')
 VALID_ENTRIES_EXTENSION = (".png", ".PNG", ".jpg", ".JPG", ".jpeg", ".JPEG", ".tif", ".tiff", ".TIF", ".TIFF")
 VALID_PREDICTION_EXTENSION = (".png", ".PNG", ".jpg", ".JPG", ".jpeg", ".JPEG", ".tif", ".tiff", ".TIF", ".TIFF")

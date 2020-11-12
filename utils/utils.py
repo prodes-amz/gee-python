@@ -11,14 +11,24 @@ class Utils:
     def __init__(self):
         pass
 
-    def get_collection_by_range(self, sensor_params, ranges, area_of_interest, map_type):
+    def get_vi_by_range(self, sensor_params, ranges, area_of_interest, map_type):
         """
         """
-        if map_type is not None:
-            # TODO: validate map param first
-            set_collection = ee.ImageCollection(sensor_params['derived'][map])
-        else:
-            set_collection = ee.ImageCollection(sensor_params['toa'])
+        set_collection = ee.ImageCollection(sensor_params['derived'][map_type])
+
+        images = []
+        for item in ranges:
+            collection = set_collection.\
+                filterDate(item[0], item[1]).\
+                filterBounds(area_of_interest).\
+                filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', settings.CLOUD_TOLERANCE))
+            images.append((item, collection.median()))
+        return images
+
+    def get_collection_by_range(self, sensor_params, ranges, area_of_interest, reflectance):
+        """
+        """
+        set_collection = ee.ImageCollection(sensor_params[reflectance])
 
         images = []
         for item in ranges:
