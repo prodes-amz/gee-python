@@ -45,11 +45,11 @@ COLLECTION = {
             'green': 'B3',
             'red': 'B4',
             'nir': 'B5',
-            'swir-1': 'B6',
+            'swir': 'B6',
             'swir-2': 'B7',
             'pan': 'B8',
             'cirrus': 'B9',
-            'termal-1': 'B10',
+            'termal': 'B10',
             'termal-2': 'B11',
         }
     },
@@ -125,7 +125,7 @@ COLLECTION = {
             'veg-red-edge': 'B8A',
             'water': 'B9',
             'cirrus': 'B10',
-            'swir-1': 'B11',
+            'swir': 'B11',
             'swir-2': 'B12'
         }
     }

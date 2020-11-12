@@ -35,11 +35,12 @@ def main(sensor, range_date):
     sensor, range_date = validate_params(sensor, range_date)
 
     # 1. Mosaic for one sensor, multiple range of dates, cloud coverage according to settings.CLOUD_TOLERANCE
-    # pd.Period().mosaick_by_sensor_and_ranges(sensor, range_date, True, 'natural', True, 'sr')
+    # pd.Period().mosaick_by_sensor_and_ranges(sensor, ranges=range_date, clip_area=True, composition='natural',
+    #                                          is_visualize=True, reflectance='sr')
 
     # 2. Mosaic vegetation index (ndvi, ndwi, savi, ) for one sensor, multiple range of dates, cloud coverage
     #    according to settings.CLOUD_TOLERANCE
-    vi.Vegetation().vegetation_indexes(sensor, range_date, 'ndvi', True, True)
+    vi.Vegetation().vegetation_indexes(sensor, ranges=range_date, map_type='ndvi', clip_area=False, is_visualize=True)
 
 
 if __name__ == '__main__':
