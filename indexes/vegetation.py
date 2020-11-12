@@ -16,12 +16,16 @@ class Vegetation:
     def __init__(self):
         pass
 
-    def ndvi(self, red, nir):
+    def ndvi(self, image, sensor_params):
         """
         Normilized Difference Vegetation Index
         """
-        ndvi = nir.subtract(red).divide(nir.add(red)).rename('NDVI')
         vis = {'min': -1, 'max': 1, 'palette': ['blue', 'white', 'green']}
+
+        red = image.select(sensor_params['bands']['red']),
+        nir = image.select(sensor_params['bands']['nir'])
+
+        ndvi = nir.subtract(red).divide(nir.add(red)).rename('NDVI')
         return ndvi, vis
 
     def evi(self, image, sensor_params):
@@ -30,7 +34,7 @@ class Vegetation:
         Source: https://github.com/renelikestacos/Google-Earth-Engine-Python-Examples/blob/master/
                 001_EE_Classification_Landsat_8_TOA.ipynb
         """
-        vis = {'min': -1, 'max': 1, 'palette': ['blue', 'white', 'green']}
+        vis = {'min': -1, 'max': 1, 'palette': ['lightgreen', 'white', 'red']}
 
         blue = image.select(sensor_params['bands']['blue'])
         red = image.select(sensor_params['bands']['red'])
@@ -59,7 +63,8 @@ class Vegetation:
         """
         Atmospherically Resistant Vegetation Index
         """
-        vis = {'min': -1, 'max': 1, 'palette': ['blue', 'white', 'green']}
+        # TODO: definir pallete
+        vis = {'min': -1, 'max': 1}
 
         blue = image.select(sensor_params['bands']['blue'])
         red = image.select(sensor_params['bands']['red'])
@@ -156,6 +161,8 @@ class Vegetation:
         return nbr2, vis
 
     def vegetation_indexes(self, sensor, ranges, map_type, clip_area, is_visualize):
+        """
+        """
         ee.Initialize()
 
         logging.info(">> ")
@@ -163,7 +170,7 @@ class Vegetation:
         area_of_interest = (ee.FeatureCollection(settings.AOI_URL))
 
         # images = utils.Utils().get_vi_by_range(sensor_params, ranges, area_of_interest, map_type)
-        images = utils.Utils().get_collection_by_range(sensor_params, ranges, area_of_interest, 'sr')
+        images = utils.Utils().get_collection_by_range(sensor_params, ranges, area_of_interest, 'toa')
 
         for range, item in images:
             if clip_area is True:
@@ -175,9 +182,25 @@ class Vegetation:
                       "-to-" + range[1].strftime("%Y%m%d") + "-" + map_type + "-" + str(settings.CLOUD_TOLERANCE)
             absolute_map_html_path = os.path.join(settings.PATH_TO_SAVE_MAPS, mapname + ".html")
 
-            vegetation_index, vis = self.ndvi(image.select(sensor_params['bands']['red']),
-                                              image.select(sensor_params['bands']['nir']))
+            if map_type == 'ndvi':
+                vegetation_index, vis = self.ndvi(image, sensor_params)
+            elif map_type == 'nbr':
+                vegetation_index, vis = self.nbr(image, sensor_params)
+            elif map_type == 'nbr2':
+                vegetation_index, vis = self.nbr2(image, sensor_params)
+            elif map_type == 'lai':
+                vegetation_index, vis = self.lai(image, sensor_params)
+            elif map_type == 'savi':
+                vegetation_index, vis = self.savi(image, sensor_params)
+            elif map_type == 'arvi':
+                vegetation_index, vis = self.arvi(image, sensor_params)
+            elif map_type == 'evi':
+                vegetation_index, vis = self.evi(image, sensor_params)
+            else:
+                logging.warning(">>>> Incorrect vegetation index: {}".format(map_type))
+                return
 
+            # TODO: more than one band
             mapid = vegetation_index.getMapId(vis)
 
             map = folium.Map(location=[19.15, -98.75], zoom_start=11, height=1200, width=1600)
@@ -185,7 +208,7 @@ class Vegetation:
                 tiles=mapid['tile_fetcher'].url_format,
                 attr='Map Data &copy; <a href="https://earthengine.google.com/">Google Earth Engine</a>',
                 overlay=True,
-                name=sensor,
+                name=sensor + " [" + map_type + "]",
                 control=True
             ).add_to(map)
             map.add_child(folium.LayerControl())

@@ -1,8 +1,6 @@
 import logging
 import argparse
-import settings
 import indexes.vegetation as vi
-import operation.period as pd
 
 from coloredlogs import ColoredFormatter
 from utils import utils
@@ -40,7 +38,7 @@ def main(sensor, range_date):
 
     # 2. Mosaic vegetation index (ndvi, ndwi, savi, ) for one sensor, multiple range of dates, cloud coverage
     #    according to settings.CLOUD_TOLERANCE
-    vi.Vegetation().vegetation_indexes(sensor, ranges=range_date, map_type='ndvi', clip_area=False, is_visualize=True)
+    vi.Vegetation().vegetation_indexes(sensor, ranges=range_date, map_type='lai', clip_area=False, is_visualize=True)
 
 
 if __name__ == '__main__':
