@@ -15,6 +15,11 @@ class Vegetation:
     def __init__(self):
         pass
 
+    def ndvi(self, red, nir):
+        """
+        """
+        return nir.subtract(red).divide(nir.add(red)).rename('NDVI')
+
     def vegetation_indexes(self, sensor, ranges, map_type, clip_area, is_visualize):
         ee.Initialize()
 
@@ -32,6 +37,8 @@ class Vegetation:
             mapname = sensor + "-" + range[0].strftime("%Y%m%d") + \
                       "-to-" + range[1].strftime("%Y%m%d") + "-" + map_type + "-" + str(settings.CLOUD_TOLERANCE)
             absolute_map_html_path = os.path.join(settings.PATH_TO_SAVE_MAPS, mapname + ".html")
+
+            vegetation_index = self.ndvi(image.select(sensor_params['bands']['red'], sensor_params['bands']['nir']))
 
             mapid = image.getMapId()
             map = folium.Map(location=[19.15, -98.75], zoom_start=9, height=1200, width=1600)
