@@ -18,14 +18,28 @@ class Vegetation:
 
     def ndvi(self, image, sensor_params):
         """
-        Normilized Difference Vegetation Index
+        Normalized Difference Vegetation Index
         """
-        vis = {'min': -1, 'max': 1, 'palette': ['blue', 'white', 'green']}
+        # vis = {'min': -1, 'max': 1, 'palette': ['blue', 'white', 'green']}
+        vis = {'min': 0, 'max': 1, 'palette': ['FFFFFF', 'CE7E45', 'FCD163', '66A000', '207401',
+                                               '056201', '004C00', '023B01', '012E01', '011301']}
 
-        red = image.select(sensor_params['bands']['red']),
+        red = image.select(sensor_params['bands']['red'])
         nir = image.select(sensor_params['bands']['nir'])
 
         ndvi = nir.subtract(red).divide(nir.add(red)).rename('NDVI')
+        return ndvi, vis
+
+    def ndwi(self, image, sensor_params):
+        """
+        Normalized Difference Water Index
+        """
+        vis = {'min': -1, 'max': 1, 'palette': ["dfdfdf", "00bfff"]}
+
+        blue = image.select(sensor_params['bands']['blue'])
+        nir = image.select(sensor_params['bands']['nir'])
+
+        ndvi = blue.add(nir).divide(blue.subtract(nir)).rename('NDWI')
         return ndvi, vis
 
     def evi(self, image, sensor_params):
@@ -64,7 +78,7 @@ class Vegetation:
         Atmospherically Resistant Vegetation Index
         """
         # TODO: definir pallete
-        vis = {'min': -1, 'max': 1}
+        vis = {'min': -1, 'max': 1, 'palette': ['lightgreen', 'white', 'red']}
 
         blue = image.select(sensor_params['bands']['blue'])
         red = image.select(sensor_params['bands']['red'])
@@ -160,17 +174,19 @@ class Vegetation:
         )
         return nbr2, vis
 
-    def vegetation_indexes(self, sensor, ranges, map_type, clip_area, is_visualize):
+    def vegetation_indexes(self, sensor, ranges, map_type, reflectance, clip_area, is_visualize):
         """
         """
         ee.Initialize()
 
-        logging.info(">> ")
+        logging.info(">> Generating vegetation index [{}]...".format(map_type))
+
         sensor_params = settings.COLLECTION[sensor]
         area_of_interest = (ee.FeatureCollection(settings.AOI_URL))
 
+        logging.info(">>>> Filtering collection...")
         # images = utils.Utils().get_vi_by_range(sensor_params, ranges, area_of_interest, map_type)
-        images = utils.Utils().get_collection_by_range(sensor_params, ranges, area_of_interest, 'toa')
+        images = utils.Utils().get_collection_by_range(sensor, ranges, area_of_interest, reflectance)
 
         for range, item in images:
             if clip_area is True:
@@ -179,11 +195,14 @@ class Vegetation:
                 image = item
 
             mapname = sensor + "-" + range[0].strftime("%Y%m%d") + \
-                      "-to-" + range[1].strftime("%Y%m%d") + "-" + map_type + "-" + str(settings.CLOUD_TOLERANCE)
+                      "-to-" + range[1].strftime("%Y%m%d") + "-" + reflectance + "-" + map_type + \
+                      "-" + str(settings.CLOUD_TOLERANCE)
             absolute_map_html_path = os.path.join(settings.PATH_TO_SAVE_MAPS, mapname + ".html")
 
             if map_type == 'ndvi':
                 vegetation_index, vis = self.ndvi(image, sensor_params)
+            elif map_type == 'ndwi':
+                vegetation_index, vis = self.ndwi(image, sensor_params)
             elif map_type == 'nbr':
                 vegetation_index, vis = self.nbr(image, sensor_params)
             elif map_type == 'nbr2':
@@ -200,10 +219,9 @@ class Vegetation:
                 logging.warning(">>>> Incorrect vegetation index: {}".format(map_type))
                 return
 
-            # TODO: more than one band
             mapid = vegetation_index.getMapId(vis)
 
-            map = folium.Map(location=[19.15, -98.75], zoom_start=11, height=1200, width=1600)
+            map = folium.Map(location=[-22, -50.75], zoom_start=5, height=1200, width=1600)
             folium.TileLayer(
                 tiles=mapid['tile_fetcher'].url_format,
                 attr='Map Data &copy; <a href="https://earthengine.google.com/">Google Earth Engine</a>',
@@ -212,8 +230,11 @@ class Vegetation:
                 control=True
             ).add_to(map)
             map.add_child(folium.LayerControl())
+
+            logging.info(">>>> Saving map in {}...".format(absolute_map_html_path))
             map.save(absolute_map_html_path)
 
+            logging.info(">>>> Visualizing throw folium...")
             if is_visualize is True:
                 webbrowser.open(absolute_map_html_path)
 

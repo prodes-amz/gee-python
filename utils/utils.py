@@ -25,17 +25,28 @@ class Utils:
             images.append((item, collection.median()))
         return images
 
-    def get_collection_by_range(self, sensor_params, ranges, area_of_interest, reflectance):
+    def get_collection_by_range(self, sensor, ranges, area_of_interest, reflectance):
         """
         """
+        sensor_params = settings.COLLECTION[sensor]
         set_collection = ee.ImageCollection(sensor_params[reflectance])
 
         images = []
         for item in ranges:
-            collection = set_collection.\
-                filterDate(item[0], item[1]).\
-                filterBounds(area_of_interest).\
-                filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', settings.CLOUD_TOLERANCE))
+            if sensor == 'landsat-8' or sensor == 'landsat-7':
+                collection = set_collection.\
+                    filterDate(item[0], item[1]).\
+                    filterBounds(area_of_interest)
+            elif sensor == 'sentinel-2':
+                collection = set_collection. \
+                    filterDate(item[0], item[1]). \
+                    filterBounds(area_of_interest). \
+                    filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', settings.CLOUD_TOLERANCE))
+            else:
+                logging.info(">>>>>> The sensor {} seems not to exist in collection filter. "
+                             "Check it and try again".format(sensor))
+                return images
+
             images.append((item, collection.median()))
         return images
 

@@ -40,7 +40,7 @@ COLLECTION = {
             'agriculture': ['B6', 'B5', 'B2']
         },
         'bands': {
-            'costal': 'B1',
+            'coastal': 'B1',
             'blue': 'B2',
             'green': 'B3',
             'red': 'B4',
@@ -67,13 +67,8 @@ COLLECTION = {
         },
         'vis': {
             'min': 0,
-            'max': 1,
-            'palette': [
-                'FFFFFF', 'CE7E45', 'DF923D', 'F1B555', 'FCD163',
-                '99B718', '74A901', '66A000', '529400', '3E8601',
-                '207401', '056201', '004C00', '023B01', '012E01',
-                '011D01', '011301'
-            ]
+            'max': 0.5,
+            'gamma': [0.95, 1.1, 1]
         },
         'composite': {
             'natural': ['B3', 'B2', 'B1'],
@@ -87,7 +82,7 @@ COLLECTION = {
             'red': 'B3',
             'nir': 'B4',
             'swir': 'B5',
-            'termal': 'B6',
+            'thermal': 'B6',
             'mid-ir': 'B7',
             'pan': 'B8',
         }
@@ -114,7 +109,7 @@ COLLECTION = {
             'agriculture': ['B11', 'B8', 'B3']
         },
         'bands': {
-            'costal': 'B1',
+            'coastal': 'B1',
             'blue': 'B2',
             'green': 'B3',
             'red': 'B4',
