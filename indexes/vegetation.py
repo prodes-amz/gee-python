@@ -174,6 +174,70 @@ class Vegetation:
         )
         return nbr2, vis
 
+    def vegetation_indexes_monthly(self, sensor, ranges, map_type, reflectance, clip_area, is_visualize):
+        """
+        """
+        ee.Initialize()
+
+        logging.info(">> Generating vegetation index [{}]...".format(map_type))
+
+        sensor_params = settings.COLLECTION[sensor]
+        area_of_interest = (ee.FeatureCollection(settings.AOI_URL))
+
+        logging.info(">>>> Filtering collection...")
+        # images = utils.Utils().get_vi_by_range(sensor_params, ranges, area_of_interest, map_type)
+        images = utils.Utils().get_collection_by_range(sensor, ranges, area_of_interest, reflectance)
+
+        for range, item in images:
+            if clip_area is True:
+                image = item.clipToCollection(area_of_interest)
+            else:
+                image = item
+
+            mapname = sensor + "-" + range[0].strftime("%Y%m%d") + \
+                      "-to-" + range[1].strftime("%Y%m%d") + "-" + reflectance + "-" + map_type + \
+                      "-" + str(settings.CLOUD_TOLERANCE)
+            absolute_map_html_path = os.path.join(settings.PATH_TO_SAVE_MAPS, mapname + ".html")
+
+            if map_type == 'ndvi':
+                vegetation_index, vis = self.ndvi(image, sensor_params)
+            elif map_type == 'ndwi':
+                vegetation_index, vis = self.ndwi(image, sensor_params)
+            elif map_type == 'nbr':
+                vegetation_index, vis = self.nbr(image, sensor_params)
+            elif map_type == 'nbr2':
+                vegetation_index, vis = self.nbr2(image, sensor_params)
+            elif map_type == 'lai':
+                vegetation_index, vis = self.lai(image, sensor_params)
+            elif map_type == 'savi':
+                vegetation_index, vis = self.savi(image, sensor_params)
+            elif map_type == 'arvi':
+                vegetation_index, vis = self.arvi(image, sensor_params)
+            elif map_type == 'evi':
+                vegetation_index, vis = self.evi(image, sensor_params)
+            else:
+                logging.warning(">>>> Incorrect vegetation index: {}".format(map_type))
+                return
+
+            mapid = vegetation_index.getMapId(vis)
+
+            map = folium.Map(location=[-22, -50.75], zoom_start=5, height=1200, width=1600)
+            folium.TileLayer(
+                tiles=mapid['tile_fetcher'].url_format,
+                attr='Map Data &copy; <a href="https://earthengine.google.com/">Google Earth Engine</a>',
+                overlay=True,
+                name=sensor + " [" + map_type + "]",
+                control=True
+            ).add_to(map)
+            map.add_child(folium.LayerControl())
+
+            logging.info(">>>> Saving map in {}...".format(absolute_map_html_path))
+            map.save(absolute_map_html_path)
+
+            logging.info(">>>> Visualizing throw folium...")
+            if is_visualize is True:
+                webbrowser.open(absolute_map_html_path)
+
     def vegetation_indexes(self, sensor, ranges, map_type, reflectance, clip_area, is_visualize):
         """
         """
