@@ -38,7 +38,7 @@ def main(sensor, range_date):
 
     # 2. Mosaic vegetation index (ndvi, ndwi, arvi, lai, evi, savi, nbr, nbr2) for one sensor,
     # multiple range of dates, cloud coverage according to settings.CLOUD_TOLERANCE
-    vi.Vegetation().vegetation_indexes(sensor, ranges=range_date, map_type='ndwi', reflectance='toa',
+    vi.Vegetation().vegetation_indexes(sensor, ranges=range_date, map_type='ndvi', reflectance='toa',
                                        clip_area=False, is_visualize=True)
 
 
