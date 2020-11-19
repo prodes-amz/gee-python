@@ -58,7 +58,8 @@ class Period:
 
     def mosaick_by_multiple_sensors_ranges(self, ranges, map_type, clip_area, composition, is_visualize):
         """
-        Source: https://code.earthengine.google.com/20ad3c83a17ca27b28640fb922819208
+        Source:
+            - https://code.earthengine.google.com/20ad3c83a17ca27b28640fb922819208
         """
         ee.Initialize()
 

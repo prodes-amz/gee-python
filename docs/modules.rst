@@ -4,9 +4,10 @@ gee-python
 .. toctree::
    :maxdepth: 4
 
+   introduction
    main
    indexes
    operation
-   utils
    time-series
+   utils
    settings

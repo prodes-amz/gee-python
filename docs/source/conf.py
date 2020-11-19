@@ -18,11 +18,12 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'gee-python'
-copyright = '2020, Monitoramento do Desmatamento da Floresta Amazônica Brasileira por Satélite - PRODES/INPE'
+copyright = '2020, Rodolfo Lotte'
 author = 'Rodolfo Lotte'
 
 # The full version, including alpha/beta/rc tags
 release = '0.1'
+
 
 # -- General configuration ---------------------------------------------------
 
@@ -98,3 +99,54 @@ import sphinx_glpi_theme
 html_theme = "glpi"
 
 html_theme_path = sphinx_glpi_theme.get_html_themes_path()
+
+# -- Options for LaTeX output ---------------------------------------------
+latex_elements = {
+    # The paper size ('letterpaper' or 'a4paper').
+    #
+    # 'papersize': 'letterpaper',
+
+    # The font size ('10pt', '11pt' or '12pt').
+    #
+    # 'pointsize': '10pt',
+
+    # Additional stuff for the LaTeX preamble.
+    #
+    # 'preamble': '',
+
+    # Latex figure (float) alignment
+    #
+    # 'figure_align': 'htbp',
+}
+
+# Grouping the document tree into LaTeX files. List of tuples
+# (source start file, target name, title,
+#  author, documentclass [howto, manual, or own class]).
+latex_documents = [
+    (master_doc, 'pythonhelp.tex', u'python help Documentation',
+     u'Stephan', 'manual'),
+]
+
+
+# -- Options for manual page output ---------------------------------------
+
+# One entry per manual page. List of tuples
+# (source start file, name, description, authors, manual section).
+man_pages = [
+    (master_doc, 'pythonhelp', u'python help Documentation',
+     [author], 1)
+]
+
+
+# -- Options for Texinfo output -------------------------------------------
+
+# Grouping the document tree into Texinfo files. List of tuples
+# (source start file, target name, title, author,
+#  dir menu entry, description, category)
+texinfo_documents = [
+    (master_doc, 'pythonhelp', u'python help Documentation',
+     author, 'pythonhelp', 'One line description of project.',
+     'Miscellaneous'),
+]
+
+

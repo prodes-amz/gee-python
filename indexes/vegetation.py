@@ -19,8 +19,10 @@ class Vegetation:
     def ndvi(self, image, sensor_params):
         """
         Normalized Difference Vegetation Index
+
+        :param image: a unique image from a ImageCollection (earthengine-api object)
+        :param sensor_params: the sensor's parameters
         """
-        # vis = {'min': -1, 'max': 1, 'palette': ['blue', 'white', 'green']}
         vis = {'min': 0, 'max': 1, 'palette': ['FFFFFF', 'CE7E45', 'FCD163', '66A000', '207401',
                                                '056201', '004C00', '023B01', '012E01', '011301']}
 
@@ -33,6 +35,9 @@ class Vegetation:
     def ndwi(self, image, sensor_params):
         """
         Normalized Difference Water Index
+
+        :param image: a unique image from a ImageCollection (earthengine-api object)
+        :param sensor_params: the sensor's parameters
         """
         vis = {'min': -1, 'max': 1, 'palette': ["dfdfdf", "00bfff"]}
 
@@ -45,6 +50,10 @@ class Vegetation:
     def evi(self, image, sensor_params):
         """
         Enhanced Vegetation Index
+
+        :param image: a unique image from a ImageCollection (earthengine-api object)
+        :param sensor_params: the sensor's parameters
+
         Source: https://github.com/renelikestacos/Google-Earth-Engine-Python-Examples/blob/master/
                 001_EE_Classification_Landsat_8_TOA.ipynb
         """
@@ -76,6 +85,9 @@ class Vegetation:
     def arvi(self, image, sensor_params):
         """
         Atmospherically Resistant Vegetation Index
+
+        :param image: a unique image from a ImageCollection (earthengine-api object)
+        :param sensor_params: the sensor's parameters
         """
         # TODO: definir pallete
         vis = {'min': -1, 'max': 1, 'palette': ['lightgreen', 'white', 'red']}
@@ -97,6 +109,9 @@ class Vegetation:
     def lai(self, image, sensor_params):
         """
         Leaf Area Index
+
+        :param image: a unique image from a ImageCollection (earthengine-api object)
+        :param sensor_params: the sensor's parameters
         """
         vis = {'min': -1, 'max': 1, 'palette': ["1bb81d", "98ff0a", "fdff00", "ff0000"]}
 
@@ -119,6 +134,9 @@ class Vegetation:
     def savi(self, image, sensor_params):
         """
         Soil-adjusted vegetation index
+
+        :param image: a unique image from a ImageCollection (earthengine-api object)
+        :param sensor_params: the sensor's parameters
         """
         vis = {'min': -1, 'max': 1, 'palette': ["ac781c", "d1ff0c", "65e510", "2fa036"]}
 
@@ -141,6 +159,9 @@ class Vegetation:
     def nbr(self, image, sensor_params):
         """
         Difference Normalized Burn Index
+
+        :param image: a unique image from a ImageCollection (earthengine-api object)
+        :param sensor_params: the sensor's parameters
         """
         vis = {'min': -1, 'max': 1, 'palette': ["ff0000", "e6ff04", "87ff14", "22943e"]}
 
@@ -159,6 +180,9 @@ class Vegetation:
     def nbr2(self, image, sensor_params):
         """
         Difference Normalized Burn Index 2
+
+        :param image: a unique image from a ImageCollection (earthengine-api object)
+        :param sensor_params: the sensor's parameters
         """
         vis = {'min': -1, 'max': 1, 'palette': ["ff0000", "e6ff04", "87ff14", "22943e"]}
 
@@ -301,4 +325,5 @@ class Vegetation:
             logging.info(">>>> Visualizing throw folium...")
             if is_visualize is True:
                 webbrowser.open(absolute_map_html_path)
+
 
